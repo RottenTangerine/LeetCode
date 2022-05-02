@@ -68,3 +68,46 @@ class Solution(object):
             current, leaf = leaf, []
         return ans
 ```
+
+## Clone Graph
+
+[Link](https://leetcode.com/problems/clone-graph/)
+
+Given a reference of a node in a **connected** undirected graph.
+
+Return a **deep copy** (clone) of the graph.
+
+Each node in the graph contains a value (int) and a list (List[Node]) of its neighbors.
+
+To solve this question, I also write a code to generate and show graph.
+You can see this code in `CloneGraph.py`
+
+
+```python
+class Solution(object):
+    def cloneGraph(self, node):
+        """
+        :type node: A reference of a node in a connected undirected graph.
+        :rtype: Node
+        """
+        if not node: return node
+        visited, queue = set(), collections.deque([node])
+        copy_dict = {}
+
+        while queue:
+            current_node = queue.popleft()
+            if current_node in visited: continue
+            visited.add(current_node)
+
+            if current_node not in copy_dict:
+                copy_dict[current_node] = Node(current_node.val)
+
+            for neighbor in current_node.neighbors:
+                if neighbor not in copy_dict:
+                    copy_dict[neighbor] = Node(neighbor.val)
+                copy_dict[current_node].neighbors.append(copy_dict[neighbor])
+
+                queue.append(neighbor)
+
+        return copy_dict[node]
+```
