@@ -1,10 +1,14 @@
-**Daily Coding Test**
+<h1>Daily Coding Test</h1>
 
 Solutions (almost all) I put here may not prefect, just a reference.
 
 Have fun!
 
 [LeetCode Link](https://leetcode.com/problemset/all/)
+
+<hr/>
+
+# BFS
 
 ## Number of islands
 
@@ -18,10 +22,6 @@ An island is surrounded by water and is formed by connecting adjacent lands hori
 ```python
 class Solution(object):
     def numIslands(self, grid):
-        """
-        :type grid: List[List[str]]
-        :rtype: int
-        """
         counter = 0
         m, n = len(grid), len(grid[0])
         total = m * n
@@ -57,10 +57,6 @@ You can see this code in `LevelOeder.py`
 ```python
 class Solution(object):
     def levelOrder(self, root):
-        """
-        :type root: TreeNode
-        :rtype: List[List[int]]
-        """
         ans, current, leaf = [], [root], []
         while root and current:
             ans.append([node.val for node in current])
@@ -86,10 +82,6 @@ You can see this code in `CloneGraph.py`
 ```python
 class Solution(object):
     def cloneGraph(self, node):
-        """
-        :type node: A reference of a node in a connected undirected graph.
-        :rtype: Node
-        """
         if not node: return node
         visited, queue = set(), collections.deque([node])
         copy_dict = {}
@@ -111,3 +103,62 @@ class Solution(object):
 
         return copy_dict[node]
 ```
+
+## Word Ladder
+
+[Link](https://leetcode.com/problems/word-ladder/)
+
+Given two words, beginWord and endWord, and a dictionary wordList
+
+Return the **number of words** in the **shortest transformation sequence** from beginWord to endWord, 
+or 0 if no such sequence exists.
+
+**Stupid solution (Exceeded time limit)**
+```python
+class Solution(object):
+    def ladderLength(self, beginWord, endWord, wordList):
+        def list2dict(word_list):
+            word_dict = {}
+            for word in word_list:
+                word_dict[word] = [i for i in word_list if (len([1 for x, y in zip(word, i) if x != y]) == 1)]
+            return word_dict
+
+        visited = set()
+        queue = collections.deque([[i] for i in wordList if (len([1 for x, y in zip(beginWord, i) if x != y]) == 1)])
+        word_dict = list2dict(wordList)
+
+        while queue:
+            current_path = queue.popleft()
+            current_word = current_path[-1]
+
+            if current_word == endWord: return len(current_path) + 1
+
+            if current_word in visited: continue
+            visited.add(current_word)
+
+            for value in word_dict[current_word]:
+                new_path = current_path + [value]
+                queue.append(new_path)
+        return 0
+```
+
+**Better solution from community**
+
+```python
+class Solution(object):
+    def ladderLength(self, beginWord, endWord, wordList):
+        wordList = set(wordList)
+        queue = collections.deque([[beginWord, 1]])
+        while queue:
+            word, length = queue.popleft()
+            if word == endWord: return length
+
+            for i in range(len(word)):
+                for c in 'abcdefghijklmnopqrstuvwxyz':
+                    next_word = word[:i] + c + word[i+1:]
+                    if next_word in wordList:
+                        wordList.remove(next_word)
+                        queue.append([next_word, length + 1])
+        return 0
+```
+**Hint:** check value in set takes constant-time to lookup. While loop through the list to check for a word resulting in O(N)
